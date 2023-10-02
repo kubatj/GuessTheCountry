@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Navbar() {
   // todo make the nav btn look better
   return (
-    <section className="p-4 border-b">
+    <nav className="p-4 border">
       <ul className="flex flex-row w-full">
         <li className="px-4 border-b-4 border-transparent hover:border-slate-300">
           <Link href={"/"}>Home Page</Link>
@@ -12,6 +12,6 @@ export default function Navbar() {
           <Link href={"/user"}>My Account</Link>
         </li>
       </ul>
-    </section>
+    </nav>
   );
 }

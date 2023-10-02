@@ -1,8 +1,9 @@
 "use client";
 
 import { Country } from "@/type";
-import { useState } from "react";
-import Image from "next/image";
+import { useCallback, useState } from "react";
+import AnswerSection from "./AnswerSection";
+import CountryCard from "./CountryCard";
 
 type Props = {
   countries: Country[];
@@ -14,38 +15,54 @@ function getRandomArbitrary(min: number, max: number) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-function getRandomCountry(countries: Country[]): Country[] {
+function getRandomCountry(countries: Country[], success: boolean): Country[] {
   const randomIndex = getRandomArbitrary(0, countries.length);
 
-  return countries.slice(randomIndex - 1, randomIndex);
+  let country: Country[] = [];
+
+  if (success) {
+    country = countries.splice(randomIndex - 1, 1);
+  } else {
+    country = countries.slice(randomIndex - 1, randomIndex);
+  }
+
+  return country; // todo need to splice only on good anwser
 }
 
 export default function GameLayout({ countries }: Props) {
-  const [currentCountry, setCurrentCountry] = useState<Country>(
-    getRandomCountry(countries)[0]
-  );
-  const [answer, setAnswer] = useState<string>("");
+  //  hooks
   const [success, setSuccess] = useState<boolean>(false);
   const [failure, setFailure] = useState<boolean>(false);
+  const [currentCountry, setCurrentCountry] = useState<Country>();
 
-  const onGetNext = (): void => {
-    const nextCountry: Country = getRandomCountry(countries)[0];
-    setCurrentCountry(nextCountry);
-    console.log("the next country", currentCountry.name.common);
-    console.log("number of country", countries.length);
-  };
+  const onGetNext = useCallback(
+    (success: boolean) => {
+      setCurrentCountry(getRandomCountry(countries, success)[0]);
+    },
+    [countries]
+  );
 
-  const onSubmitAnswer = (): void => {
-    console.log("answer", answer);
+  if (!currentCountry) {
+    // should only run on init
+    onGetNext(false);
+  }
 
-    if (answer.toLowerCase() === currentCountry.name.common.toLowerCase()) {
+  const handleSubmit = (value: string): void => {
+    console.log("value", value);
+
+    if (
+      currentCountry &&
+      value.toLocaleLowerCase() ===
+        currentCountry.name.common.toLocaleLowerCase()
+    ) {
+      console.log("success");
       setSuccess(true);
       setFailure(false);
-      setAnswer("");
-      onGetNext();
+      onGetNext(true);
     } else {
-      setFailure(true);
+      console.log("failure");
       setSuccess(false);
+      setFailure(true);
     }
   };
 
@@ -62,39 +79,27 @@ export default function GameLayout({ countries }: Props) {
         </div>
       ) : null}
 
-      <div className="min-w-96 min-h-full rounded-lg border-2 border-solid border-gray-300 shadow-sm p-1 bg-slate-100">
-        <Image
-          src={currentCountry.flags.png}
-          alt="flag of country"
-          width={250}
-          height={150}
-          className="rounded-lg "
-        />
-        <div className=" mt-10 text-center text-gray-500">
-          <p className="text-md">{`Population: ${currentCountry.population}`}</p>
-          {currentCountry.name.common ? currentCountry.name.common : ""}
-        </div>
-      </div>
-      <section className="mt-8 flex flex-row gap-4">
-        <input
-          id="answer"
-          type="text"
-          placeholder="Guess here"
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          className="bg-yellow-50 text-md w-64 p-2 outline-1 border-lime-200 round-lg border rounded focus:border-lime:400"
-        />
-        <button
-          className="p-4 bg-lime-100 rounded-md outline-1 hover:bg-lime-400 text-black font-semibold"
-          onClick={onSubmitAnswer}
-        >
-          submit answer
-        </button>
-      </section>
+      {currentCountry ? <CountryCard currentCountry={currentCountry} /> : null}
+      <AnswerSection onSubmit={handleSubmit} />
       <section>
         <section className="m-4 flex flex-row gap-1">
-          <button className="p-4 rounded bg-slate-500" onClick={onGetNext}>
+          <button
+            className="p-4 rounded bg-slate-500 flex hover:opacity-95"
+            onClick={() => onGetNext(false)}
+          >
             Show next country
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-6 h-6 ml-2"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z"
+                clipRule="evenodd"
+              />
+            </svg>
           </button>
         </section>
       </section>

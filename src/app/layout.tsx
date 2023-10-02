@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} h-full bg-gray-50`}>
-        <header>
+        <header className="sticky top-0 z-50 h-full w-full overflow-hidden">
           <Navbar />
         </header>
         {children}
