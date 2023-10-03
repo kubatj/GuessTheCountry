@@ -2,6 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import { Suspense } from "react";
+
 // component
 import Navbar from "./navbar";
 
@@ -21,7 +23,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} h-full bg-gray-50`}>
         <header className="sticky top-0 z-50 h-full w-full overflow-hidden">
-          <Navbar />
+          <Suspense>
+            <Navbar />
+          </Suspense>
         </header>
         {children}
       </body>

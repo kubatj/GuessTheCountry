@@ -2,8 +2,11 @@
 
 import { Country } from "@/type";
 import { useCallback, useState } from "react";
-import AnswerSection from "./AnswerSection";
+
+// components
 import CountryCard from "./CountryCard";
+import Scoreboard from "./Scoreboard";
+import { PageSkeleton } from "@/ui/PageSkeleton";
 
 type Props = {
   countries: Country[];
@@ -33,6 +36,7 @@ export default function GameLayout({ countries }: Props) {
   //  hooks
   const [success, setSuccess] = useState<boolean>(false);
   const [failure, setFailure] = useState<boolean>(false);
+  const [answser, setAnswer] = useState<string>("");
   const [currentCountry, setCurrentCountry] = useState<Country>();
 
   const onGetNext = useCallback(
@@ -47,20 +51,19 @@ export default function GameLayout({ countries }: Props) {
     onGetNext(false);
   }
 
-  const handleSubmit = (value: string): void => {
-    console.log("value", value);
+  const handleSubmit = (): void => {
+    console.log("value", answser);
 
     if (
       currentCountry &&
-      value.toLocaleLowerCase() ===
+      answser.toLocaleLowerCase() ===
         currentCountry.name.common.toLocaleLowerCase()
     ) {
-      console.log("success");
       setSuccess(true);
       setFailure(false);
+      setAnswer("");
       onGetNext(true);
     } else {
-      console.log("failure");
       setSuccess(false);
       setFailure(true);
     }
@@ -78,9 +81,39 @@ export default function GameLayout({ countries }: Props) {
           <h2>Wrong answer !</h2>
         </div>
       ) : null}
+      <Scoreboard nbCountryFound={250 - countries.length} />
 
       {currentCountry ? <CountryCard currentCountry={currentCountry} /> : null}
-      <AnswerSection onSubmit={handleSubmit} />
+      <section className="m-4 flex flex-row gap-2">
+        <input
+          id="answer"
+          type="text"
+          value={answser}
+          placeholder="Guess here"
+          onChange={(e) => setAnswer(e.target.value)}
+          className="bg-yellow-50 text-md w-64 p-2 outline-1 border-slate-700 opacity-90 round-lg border rounded "
+        />
+        <button
+          className="p-4 bg-lime-100 rounded-md outline-1 hover:bg-lime-400 text-black font-semibold flex disabled:opacity-50"
+          onClick={handleSubmit}
+        >
+          submit answer
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6 ml-2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </button>
+      </section>
       <section>
         <section className="m-4 flex flex-row gap-1">
           <button
