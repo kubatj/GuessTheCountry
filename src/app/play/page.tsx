@@ -18,7 +18,7 @@ export default async function PlayPage() {
     <main className="h-screen flex flex-col justify-center items-center">
       <div className="-mt-16">
         <h1 className="text-4xl font-bold sm:text-5xl tracking-tight text-gray-900 text-center">
-          Name the Country
+          Guess The Country !
         </h1>
         <div className="mt-10">
           <GameLayout countries={countries} />

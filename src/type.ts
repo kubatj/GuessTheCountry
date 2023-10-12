@@ -8,11 +8,11 @@ export type Country = {
   independant: boolean;
   status: string;
   unMember: boolean;
-  currencies: string[];
+  currencies: { [currencyCode: string]: { name: string; symbol: string } };
   capital: string[];
   region: string;
   subregion: string;
-  languages: string[];
+  languages: { [languageCode: string]: string };
   borders: string[];
   area: number;
   population: number;
